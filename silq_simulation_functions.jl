@@ -120,10 +120,12 @@ end
     
  
 function one_fight(;constitution,
+                   strength,
+                   dexterity,
+                   grace,
                    melee,
                    evasion,
                    function_weapon,
-                   strength,
                    concentration,
                    perception_concentration,
                    finess,
@@ -142,8 +144,8 @@ function one_fight(;constitution,
 
     health_mine = calculate_hp(constitution)
     max_hp = health_mine
-    base_strength = strength
-    base_to_hit = 
+    base_strength=strength
+    base_grace=grace
 
     weapon_dice=function_weapon("weapon_dice")
     weapon_weight=function_weapon("weapon_weigh")
