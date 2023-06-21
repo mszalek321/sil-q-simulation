@@ -52,8 +52,14 @@ function one_hit(to_hit, to_avoid, weight, balanced)
     return bonus_dice
 end
  
-function one_round(to_hit, to_avoid, weight, dice, damage, armour, smite, balanced, sharpness = 0)
+function one_round(to_hit, to_avoid, weight, dice, damage, armour, smite, balanced, sharpness = 0, nocrits=false)
     bonus_dice = one_hit(to_hit, to_avoid, weight, balanced)
+
+    if nocrits==true
+        if bonus_dice >= 0
+            bonus_dice =0
+        end
+    end
  
     if bonus_dice >= 0 && smite == false
         total_damage = rand_ydx((dice+bonus_dice), damage)
@@ -63,7 +69,7 @@ function one_round(to_hit, to_avoid, weight, dice, damage, armour, smite, balanc
         total_damage = 0
     end
     total_damage = max(total_damage, 0)
-    total_damage = total_damage-(armour*(1-sharpness))
+    total_damage = total_damage-floor(armour*(1-sharpness))
     total_damage = max(total_damage, 0)
     return total_damage, bonus_dice
 end
@@ -96,36 +102,162 @@ function function_belegwath(field)
     end
 end
 
-function my_armour(field)
-    if field == "armour"
-        return rand_ydx(1,7)+rand_ydx(1,3)+rand_ydx(1,2)+1
+
+function function_orc_skirmisher(field)
+    if field == "health"
+        return rand_ydx(12,4)
     elseif field == "to_avoid"
-        return (-1+2-2)
+        return 3
+    elseif field == "armour"
+        return rand_ydx(3, 4)
+    elseif field == "attack"
+        to_hit_enemy = 6
+        enemy_dice = 3
+        enemy_damage_total = 7
+        return to_hit_enemy, enemy_dice, enemy_damage_total
+    elseif field == "name"
+        return "Orc skirmisher"
     end
 end
 
-function great_sword(field)
-    if field=="to_avoid"
-        return 1
-    elseif field=="to_hit"
-        return -1
-    elseif field=="weapon_weigh"
-        return 6
-    elseif field=="weapon_dice"
-        return 3
-    elseif field=="weapon_damage"
-        return 5
+
+function my_armour(field)
+    if field == "armour"
+        #return rand_ydx(1,7)+rand_ydx(1,3)+rand_ydx(1,2)+1
+        return 0
+    elseif field == "to_avoid"
+        #return (-1+2-2)
+        return 0
+    elseif field == "to_hit"
+        return 0
     end
 end
-    
- 
+
+great_sword = Dict("to_avoid" =>1,
+"to_hit"=>-1,
+"weapon_weight"=>6,
+"weapon_dice"=>3,
+"weapon_damage"=>5,
+"name"=>"great sword")
+
+mithril_great_sword = Dict("to_avoid" =>1,
+"to_hit"=>-1,
+"weapon_weight"=>4,
+"weapon_dice"=>3,
+"weapon_damage"=>6,
+"name"=>"mithril great sword")
+
+curved_sword = Dict("to_avoid" =>1,
+"to_hit"=>-1,
+"weapon_weight"=>4,
+"weapon_dice"=>2,
+"weapon_damage"=>5,
+"name"=>"curved sword")
+
+longsword = Dict("to_avoid" =>1,
+"to_hit"=>0,
+"weapon_weight"=>3,
+"weapon_dice"=>2,
+"weapon_damage"=>5,
+"name"=>"longsword")
+
+mithril_longsword = Dict("to_avoid" =>1,
+"to_hit"=>1,
+"weapon_weight"=>2,
+"weapon_dice"=>2,
+"weapon_damage"=>5,
+"name"=>"mithril longsword")                   
+
+spear_two_hand = Dict("to_avoid" =>0,
+"to_hit"=>0,
+"weapon_weight"=>3,
+"weapon_dice"=>1,
+"weapon_damage"=>11,
+"name"=>"spear two hand")
+
+spear_one_hand = Dict("to_avoid" =>0,
+"to_hit"=>0,
+"weapon_weight"=>3,
+"weapon_dice"=>1,
+"weapon_damage"=>9,
+"name"=>"spear one hand")
+
+shortsword = Dict("to_avoid" =>1,
+"to_hit"=>0,
+"weapon_weight"=>2,
+"weapon_dice"=>1,
+"weapon_damage"=>7,
+"name"=>"shortsword")
+
+dagger = Dict("to_avoid" =>1,
+"to_hit"=>0,
+"weapon_weight"=>0,
+"weapon_dice"=>1,
+"weapon_damage"=>5,
+"name"=>"dagger")
+
+
+great_spear = Dict("to_avoid" =>1,
+"to_hit"=>1,
+"weapon_weight"=>6,
+"weapon_dice"=>1,
+"weapon_damage"=>13,
+"name"=>"great spear")
+
+glavie = Dict("to_avoid" =>1,
+"to_hit"=>-1,
+"weapon_weight"=>7,
+"weapon_dice"=>2,
+"weapon_damage"=>9,
+"name"=>"glavie")
+
+hand_axe = Dict("to_avoid" =>0,
+"to_hit"=>-1,
+"weapon_weight"=>1,
+"weapon_dice"=>4,
+"weapon_damage"=>2,
+"name"=>"hand axe")
+
+battle_axe_two_hand = Dict("to_avoid" =>0,
+"to_hit"=>-3,
+"weapon_weight"=>4,
+"weapon_dice"=>3,
+"weapon_damage"=>4,
+"name"=>"battle axe two hand")
+
+battle_axe_one_hand = Dict("to_avoid" =>0,
+"to_hit"=>-3,
+"weapon_weight"=>4,
+"weapon_dice"=>3,
+"weapon_damage"=>6,
+"name"=>"battle axe one hand")
+
+great_axe = Dict("to_avoid" =>0,
+"to_hit"=>-4,
+"weapon_weight"=>8,
+"weapon_dice"=>4,
+"weapon_damage"=>4,
+"name"=>"great axe")
+
+quatterstaff = Dict("to_avoid" =>2,
+"to_hit"=>0,
+"weapon_weight"=>5,
+"weapon_dice"=>2,
+"weapon_damage"=>5,
+"name"=>"quatterstaff")
+
+war_hammer = Dict("to_avoid" =>0,
+"to_hit"=>-2,
+"weapon_weight"=>5,
+"weapon_dice"=>4,
+"weapon_damage"=>3,
+"name"=>"war hammer")
+
 function one_fight(;constitution,
                    strength,
-                   dexterity,
-                   grace,
                    melee,
                    evasion,
-                   function_weapon,
+                   dict_weapon,
                    concentration,
                    perception_concentration,
                    finess,
@@ -135,27 +267,29 @@ function one_fight(;constitution,
                    balanced,
                    function_my_armour,
                    function_enemy,
+                   nocrits=false,
                    debug=0)
     
     my_name = "Antar"
 
-    to_hit_mine=melee+function_weapon("to_hit")
-    to_avoid_mine=evasion+function_weapon("to_avoid")+function_my_armour("to_avoid")
+    to_hit_mine=melee+dict_weapon["to_hit"]+function_my_armour("to_hit")
+    to_avoid_mine=evasion+dict_weapon["to_avoid"]+function_my_armour("to_avoid")
 
     health_mine = calculate_hp(constitution)
     max_hp = health_mine
     base_strength=strength
-    base_grace=grace
 
-    weapon_dice=function_weapon("weapon_dice")
-    weapon_weight=function_weapon("weapon_weigh")
-    weapon_damage=function_weapon("weapon_damage")
+    weapon_dice=dict_weapon["weapon_dice"]
+    weapon_weight=dict_weapon["weapon_weight"]
+    weapon_damage=dict_weapon["weapon_damage"]
     
     if finess==true
-        weapon_weight=weapon_weight-2
+        crit_weapon_weight=weapon_weight-2
     end
     if (finess==true && subtlety==true)
-        weapon_weight=weapon_weight-2
+        crit_weapon_weight=weapon_weight-4
+    else
+        crit_weapon_weight=weapon_weight
     end
 
     if power==true
@@ -181,16 +315,25 @@ function one_fight(;constitution,
         armour_mine = function_my_armour("armour")
         armour_enemy = function_enemy("armour")
 
-        weapon_damage_total = min(strength, weapon_weight)+weapon_damage
+        weapon_damage_total = min(strength, max(weapon_weight, 0))+weapon_damage
+        #println("tot weapon dmg $weapon_damage_total")
         
+        if dict_weapon["name"] == "quatterstaff" || dict_weapon["name"] == "war hammer"
+            sharpness=0.25
+        else
+            sharpness=0
+        end
+
         (my_hit, bonus_dice) = one_round(to_hit_mine+concentration_bonus,
                            to_avoid_enemy,
-                           weapon_weight,
+                           crit_weapon_weight,
                            weapon_dice,
                            weapon_damage_total,
                            armour_enemy,
                            smite,
-                           balanced)
+                           balanced,
+                           nocrits,
+                           sharpness)
  
         
         crit_exclamations = "!"^Int64(max(bonus_dice, 0))
